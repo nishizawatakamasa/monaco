@@ -1,6 +1,12 @@
-import * as monaco from "monaco-editor";
+// Editor features (find, multicursor, etc.) without language packs.
+import "monaco-editor/features/register.all.js";
+import "monaco-editor/editor/browser/coreCommands.js";
+import "monaco-editor/editor/contrib/caretOperations/browser/caretOperations.js";
+import "monaco-editor/editor/contrib/dropOrPasteInto/browser/copyPasteContribution.js";
+import "monaco-editor/editor/contrib/suggest/browser/suggestController.js";
+
+import * as monaco from "monaco-editor/editor/editor.api";
 import { loader } from "@monaco-editor/react";
-// monaco-editor 0.56 exports map `monaco-editor/editor/...` -> `esm/vs/editor/...`
 import editorWorker from "monaco-editor/editor/editor.worker.js?worker";
 
 self.MonacoEnvironment = {
