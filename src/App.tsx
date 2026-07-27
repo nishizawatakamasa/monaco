@@ -1,9 +1,10 @@
-import { useCallback, useEffect, useRef, useState } from "react";
-import Editor from "@monaco-editor/react";
+import { lazy, Suspense, useCallback, useEffect, useRef, useState } from "react";
 import { invoke } from "@tauri-apps/api/core";
 import { getCurrentWindow } from "@tauri-apps/api/window";
 import appIcon from "./assets/icon.png";
 import "./App.css";
+
+const Editor = lazy(() => import("./LazyEditor"));
 
 const SAVE_DEBOUNCE_MS = 500;
 const FONT_DEFAULT = 15;
@@ -92,34 +93,36 @@ function App() {
         </button>
       </div>
       <div className="editor">
-        <Editor
-          height="100%"
-          language="plaintext"
-          theme="vs-light"
-          value={value}
-          onChange={(next) => {
-            const text = next ?? "";
-            editedRef.current = true;
-            setValue(text);
-            scheduleSave(text);
-          }}
-          options={{
-            lineNumbers: "off", // 行番号を非表示
-            minimap: { enabled: false }, // 右側ミニマップを非表示
-            wordWrap: "on", // 長い行を折り返す
-            folding: false, // コード折りたたみを無効
-            glyphMargin: false, // 行左のアイコン余白を消す
-            lineDecorationsWidth: 0, // 行装飾用の横幅をゼロに
-            lineNumbersMinChars: 0, // 行番号欄の最小幅をゼロに
-            renderLineHighlight: "none", // 現在行のハイライトなし
-            overviewRulerLanes: 0, // 右側オーバービュールーラーを消す
-            hideCursorInOverviewRuler: true, // オーバービュー上のカーソル印を隠す
-            scrollBeyondLastLine: false, // 最終行より下への余分なスクロールなし
-            scrollbar: { verticalScrollbarSize: 8 }, // 縦スクロールバーを細く
-            fontSize: FONT_DEFAULT, // フォントサイズ（定数）
-            automaticLayout: true, // 親要素サイズ変更に合わせて再レイアウト
-          }}
-        />
+        <Suspense fallback={null}>
+          <Editor
+            height="100%"
+            language="plaintext"
+            theme="vs-light"
+            value={value}
+            onChange={(next) => {
+              const text = next ?? "";
+              editedRef.current = true;
+              setValue(text);
+              scheduleSave(text);
+            }}
+            options={{
+              lineNumbers: "off", // 行番号を非表示
+              minimap: { enabled: false }, // 右側ミニマップを非表示
+              wordWrap: "on", // 長い行を折り返す
+              folding: false, // コード折りたたみを無効
+              glyphMargin: false, // 行左のアイコン余白を消す
+              lineDecorationsWidth: 0, // 行装飾用の横幅をゼロに
+              lineNumbersMinChars: 0, // 行番号欄の最小幅をゼロに
+              renderLineHighlight: "none", // 現在行のハイライトなし
+              overviewRulerLanes: 0, // 右側オーバービュールーラーを消す
+              hideCursorInOverviewRuler: true, // オーバービュー上のカーソル印を隠す
+              scrollBeyondLastLine: false, // 最終行より下への余分なスクロールなし
+              scrollbar: { verticalScrollbarSize: 8 }, // 縦スクロールバーを細く
+              fontSize: FONT_DEFAULT, // フォントサイズ（定数）
+              automaticLayout: true, // 親要素サイズ変更に合わせて再レイアウト
+            }}
+          />
+        </Suspense>
       </div>
     </div>
   );
